@@ -3,12 +3,11 @@ package reentrantLock;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class UnfairLockExample {
-	
-	private final Lock unfairLock = new ReentrantLock();
+public class FairLockExample {
+private final Lock fairLock = new ReentrantLock(true);
 	
 	public void accessResource() {
-		unfairLock.lock();
+		fairLock.lock();
 		try {
 			System.out.println(Thread.currentThread().getName() + " Acquired the lock");
 			Thread.sleep(1000);
@@ -16,7 +15,7 @@ public class UnfairLockExample {
 			Thread.currentThread().interrupt();
 		} finally {
 			System.out.println(Thread.currentThread().getName() + " Released the lock");
-			unfairLock.unlock();
+			fairLock.unlock();
 		}
 	}
 
@@ -38,5 +37,9 @@ public class UnfairLockExample {
     t2.start();
     t3.start();
 	}
+
+
+
+	
 
 }

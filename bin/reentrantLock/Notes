@@ -1,0 +1,81 @@
+👉 ReentrantLock
+which is built on AbstractQueuedSynchronizer, AQS is a framework that manages a state variable
+ and a FIFO queue of waiting threads to build synchronization tools like locks, semaphores, etc.
+ AQS (Abstract Queued Synchronizer) is a low-level framework in Java used to build locks and synchronizers.
+
+🧠 PART 1: How AQS state Changes Step-by-Step
+AQS has a very important variable: private volatile int state;
+
+🔹 What is state?
+For ReentrantLock:
+state = 0 → unlocked
+state = 1 → locked once
+state = N → reentered N times
+
+It represents the hold count.
+
+🔐 Step-by-Step: lock() with No Contention
+Step 1: Thread calls lock()
+Internally: compareAndSetState(0, 1)
+This is CAS (atomic CPU instruction).
+
+Step 2: CAS succeeds, state = 1
+owner thread = current thread
+Lock acquired
+✅ No queue involved.
+
+🔁 Reentrant Case (Same Thread Calls lock Again)
+Thread already owns lock:
+state = 1
+
+Calls lock again →
+AQS detects: Current thread == owner
+So: state = state + 1
+Now: state = 2
+No blocking.
+
+🔒 Step-by-Step: lock() With Contention
+
+Suppose: Thread T1 holds lock (state = 1)
+Thread T2 calls lock()
+
+Step 1: CAS fails
+Because state != 0.
+Step 2: Thread T2 enters queue (via acquire())
+AQS calls: addWaiter()
+Now T2 becomes a Node in the queue.
+
+Step 3: Thread T2 parks , LockSupport.park()
+Thread goes to WAITING state.
+🔓 Now Unlock Happens
+Thread T1 calls unlock()
+Internally: state = state - 1
+If:state == 0
+Then:owner = null
+AQS wakes up next thread
+unpark(nextThread)
+Now T2 retries CAS.
+If CAS succeeds:
+state = 1
+owner = T2
+
+🧠 Summary of State Transitions
+Initial: state = 0
+
+T1 lock() → state = 1
+T1 lock() → state = 2
+T1 unlock() → state = 1
+T1 unlock() → state = 0
+T2 lock() → state = 1
+State is just a counter — but controlled via CAS + ownership rules.
+
+short note:
+👉 ReentrantLock is built on
+👉 AbstractQueuedSynchronizer (AQS),
+which maintains a volatile int state representing the lock hold count.
+Lock acquisition uses CAS (Compare And Swap), an atomic CPU operation that updates a value only if it matches the expected value.
+
+If CAS succeeds → lock is acquired immediately (no queueing).
+If CAS fails → the thread is placed in a CLH queue and parked.
+Reentrancy is handled by incrementing state if the same thread acquires the lock again.
+Unlock decrements state, and when it becomes 0, the next waiting thread is unparked.
