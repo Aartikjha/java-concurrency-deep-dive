@@ -4,7 +4,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FairLockExample {
-private final Lock fairLock = new ReentrantLock(true);
+private final Lock fairLock = new ReentrantLock(true);  // new ReentrantLock(true)  fair lock
+
 	
 	public void accessResource() {
 		fairLock.lock();

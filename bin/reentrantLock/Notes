@@ -68,7 +68,7 @@ T1 unlock() → state = 1
 T1 unlock() → state = 0
 T2 lock() → state = 1
 State is just a counter — but controlled via CAS + ownership rules.
-
+*************************************************************************************************
 short note:
 👉 ReentrantLock is built on
 👉 AbstractQueuedSynchronizer (AQS),
@@ -79,3 +79,57 @@ If CAS succeeds → lock is acquired immediately (no queueing).
 If CAS fails → the thread is placed in a CLH queue and parked.
 Reentrancy is handled by incrementing state if the same thread acquires the lock again.
 Unlock decrements state, and when it becomes 0, the next waiting thread is unparked.
+
+============================================================================================
+Disadvantages of synchronized
+1️... No Try-Lock Mechanism
+With synchronized, a thread:
+Either acquires the lock
+Or blocks indefinitely
+There is no way to try and fail immediately.
+But ReentrantLock provides: tryLock() & tryLock(timeout) This helps avoid deadlocks and improve responsiveness.
+*******
+2️... No Interruptible Lock Waiting
+
+If a thread is waiting inside synchronized,
+it cannot be interrupted.
+It will wait forever until lock is released.
+
+ReentrantLock provides: lockInterruptibly() So the thread can stop waiting if interrupted.
+********
+3️.... No Fairness Option
+
+synchronized:
+Has no fairness policy
+JVM decides which thread gets lock
+Can cause thread starvation
+ReentrantLock allows: new ReentrantLock(true) // fair lock
+**********
+4️....No Multiple Condition Variables
+
+With synchronized, you only have: wait() notify() notifyAll() Only one wait-set per object.
+But ReentrantLock allows multiple Condition objects: lock.newCondition()
+So you can have multiple independent waiting queues.
+**************
+5️... No Explicit Unlocking Control
+
+synchronized:
+Lock is automatically released when block exits
+No manual control
+ReentrantLock:
+Explicit lock() and unlock()
+More flexible but must be used carefully
+
+***********
+6️....Less Flexible for Advanced Concurrency
+
+synchronized is:
+Simpler
+Less configurable
+Modern concurrency utilities (like those built on
+AbstractQueuedSynchronizer) offer:
+Shared mode
+Timed lock
+Fair lock
+Interruptible lock
+Custom synchronizers
