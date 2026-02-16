@@ -51,9 +51,10 @@ class Task2 implements Runnable {
 
 	@Override
 	public void run() {
-		synchronized(pen) {
+		synchronized(pen) {        // Both threads now acquire locks in the same order (Pen then Paper),
+			                      //so circular wait is eliminated and deadlock cannot occur.
 			synchronized(paper) {
-			paper.writeWithPaperAndPen(pen);  // Thread locks paper and try to lock pen
+			paper.writeWithPaperAndPen(pen);  
 		}
 		}
 	} 
@@ -74,3 +75,6 @@ public class DeadlockExample {
 	}
 
 }
+
+// Deadlock is prevented by enforcing consistent lock ordering.
+//Both threads now acquire Pen before Paper, eliminating circular wait and therefore eliminating deadlock.
