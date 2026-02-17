@@ -1,0 +1,78 @@
+What Is a Thread Pool?
+
+A Thread Pool is a group of pre-created worker threads that are reused to execute multiple tasks.
+Instead of creating a new thread for every task:
+Threads are created once
+Tasks are submitted to a queue
+Available threads pick tasks and execute them
+In Java, it is managed using: 👉 java.util.concurrent.ExecutorService
+
+Common implementation: java.util.concurrent.ThreadPoolExecutor
+
+🧠 Why Do We Need Thread Pool?
+
+Creating threads is:
+Expensive (memory + CPU)
+Slow
+Can exhaust system resources if too many are created
+
+Thread pool solves this by:
+
+Reusing threads
+Controlling number of active threads
+Managing task queue efficiently
+
+🔹 How It Works (Simple Flow)
+
+Tasks are submitted
+Tasks go into a queue
+Available worker thread picks task
+Executes task
+Returns to pool for next task
+
+🎯 Uses of Thread Pool
+1️⃣ Handling Large Number of Tasks
+
+Example:
+Web server handling multiple client requests
+
+2️⃣ Controlling Concurrency
+
+Limit max number of threads to avoid:
+CPU overload
+Memory exhaustion
+
+3️⃣ Performance Optimization
+
+Thread reuse reduces:
+Thread creation overhead
+Context switching cost
+
+4️⃣ Background Task Processing
+
+Used in:
+Microservices
+Batch jobs
+Async processing
+
+🔥 Common Types of Thread Pools (Java)
+
+Fixed thread pool
+Cached thread pool
+Single thread executor
+Scheduled thread pool
+All created using:
+Executors.newFixedThreadPool(n);
+
+📌 Real-Life Analogy
+
+Restaurant example:
+Customers = tasks
+Waiters = threads
+Kitchen = thread pool
+Instead of hiring a new waiter for every customer, you reuse existing ones.
+
+🎓 Interview One-Line Definition
+
+A thread pool is a collection of reusable worker threads that execute submitted tasks,
+improving performance and controlling resource usage.
